@@ -1,5 +1,9 @@
 export { default as Navigation } from './Navigation/Navigation';
 export { default as Header } from './Header/Header';
-export { default as MoviesList } from './MoviesList/MoviesList';
-export { default as MovieInfo } from './MovieInfo/MovieInfo';
+export { default as TrendList } from './TrendList/TrendList';
+export { default as MovieSearch } from './MovieSearch/MovieSearch';
 export { default as PageNotFound } from './PageNotFound/PageNotFound';
+export { default as MovieCard } from './MovieCard/MovieCard';
+export { default as CastInfo } from './CastInfo/CastInfo';
+export { default as ReviewsInfo } from './ReviewsInfo/ReviewsInfo';
+export { default as MoviesList } from './MoviesList/MoviesList';

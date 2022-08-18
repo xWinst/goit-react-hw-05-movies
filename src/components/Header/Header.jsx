@@ -4,7 +4,9 @@ import s from './Header.module.css';
 const Header = () => {
     return (
         <header className={s.header}>
-            <Navigation />
+            <div className={s.container}>
+                <Navigation />
+            </div>
         </header>
     );
 };

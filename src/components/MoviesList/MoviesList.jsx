@@ -1,25 +1,12 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import s from './MoviesList.module.css';
-import delivery from 'js/delivery';
 
-const MoviesList = () => {
-    const [moviesList, setMoviesList] = useState([]);
-
-    useEffect(() => {
-        async function getTrand() {
-            const data = await delivery.getTrend();
-            console.log('data_now: ', data);
-            setMoviesList(data.results);
-        }
-
-        getTrand();
-    }, []);
+const MoviesList = ({ list }) => {
     return (
-        <ul>
-            {moviesList.map(movie => (
+        <ul className={s.list}>
+            {list.map(movie => (
                 <li key={movie.id}>
-                    <Link to="/movies">{movie.title}</Link>
+                    <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
                 </li>
             ))}
         </ul>

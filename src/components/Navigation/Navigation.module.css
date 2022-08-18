@@ -11,13 +11,12 @@
 }
 
 .link:hover {
-    /* color: #c51fee; */
-    /* border-bottom: 2px solid #c51fee; */
     text-shadow: 0 0 3px blue;
     transition: text-shadow 300ms ease;
 }
 
 .active {
     composes: link;
+    border-bottom: 3px solid;
     color: #c51fee;
 }
