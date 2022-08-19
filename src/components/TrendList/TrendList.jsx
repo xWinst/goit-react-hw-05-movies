@@ -12,7 +12,6 @@ const TrendList = () => {
 
         async function getTrand() {
             const data = await delivery.getTrend();
-            console.log('data_list: ', data);
             setTrendList(data.results);
         }
 

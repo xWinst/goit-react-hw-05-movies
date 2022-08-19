@@ -1,42 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MoviesList } from 'components';
 import delivery from 'services/delivery';
-import load from 'images/loading.svg';
-import search from 'images/search.svg';
+import icons from 'images/icons.svg';
 import s from './MovieSearch.module.css';
 
 const MovieSearch = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [moviesList, setMoviesList] = useState([]);
     const [status, setStatus] = useState('');
 
-    // const location = useLocation();
-    // const history = useHistory();
-    const [searchParams, setSearchParams] = useSearchParams();
-    // useEffect(() => {});
+    useEffect(() => {
+        const renderGallery = async () => {
+            setStatus('loading');
+            try {
+                const data = await delivery.search();
+                setMoviesList(data.results);
+                if (!data.results.length) setStatus('noResults');
+                else setStatus('');
+            } catch (error) {
+                console.log('error: ', error);
+            }
+        };
+
+        const query = searchParams.get('query');
+        if (query) {
+            delivery.query = query;
+            renderGallery();
+        }
+    }, [searchParams, setSearchParams]);
 
     const onSubmit = event => {
         event.preventDefault();
         const query = event.target[1].value.trim();
-        if (query && delivery.query !== query) {
-            delivery.query = query;
-            setSearchParams({ query: delivery.query });
-            renderGallery();
-            event.target[1].value = '';
-        }
-    };
-
-    const renderGallery = async () => {
-        setStatus('loading');
-        try {
-            const data = await delivery.search();
-            setMoviesList(data.results);
-            console.log('data ', data); ///////////////////
-        } catch (error) {
-            console.log('error: ', error);
-        } finally {
-            setStatus('');
-            console.log('searchParams.query: ', searchParams.get('query')); //////////
+        event.target[1].value = '';
+        if (delivery.query !== query) {
+            setSearchParams({ query });
         }
     };
 
@@ -45,9 +44,13 @@ const MovieSearch = () => {
             <form className={s.searchForm} onSubmit={onSubmit}>
                 <button type="submit" className={s.button}>
                     {status === 'loading' ? (
-                        <img className={s.load} src={load} alt="loading" />
+                        <svg className={s.load}>
+                            <use href={`${icons}#load`} />
+                        </svg>
                     ) : (
-                        <img className={s.icon} src={search} alt="search" />
+                        <svg className={s.icon}>
+                            <use href={`${icons}#search`} />
+                        </svg>
                     )}
                 </button>
 
@@ -59,15 +62,14 @@ const MovieSearch = () => {
                     placeholder="Search movies"
                 />
             </form>
-
-            {!moviesList.length && searchParams.get('query') ? (
+            {status === 'noResults' && (
                 <div className={s.noResults}>
                     Sorry, there are no movies matching your search query.
                     Please try again.
                 </div>
-            ) : (
-                <MoviesList list={moviesList} />
             )}
+
+            {moviesList.length && <MoviesList list={moviesList} />}
         </>
     );
 };

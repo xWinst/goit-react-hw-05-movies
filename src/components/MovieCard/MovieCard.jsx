@@ -1,15 +1,25 @@
-import { useParams, Link, NavLink, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import {
+    useParams,
+    NavLink,
+    Route,
+    Routes,
+    useLocation,
+    useNavigate,
+} from 'react-router-dom';
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { ImArrowLeft } from 'react-icons/im';
 import delivery from 'services/delivery';
 import s from './MovieCard.module.css';
 import poster from 'images/noposter.jpg';
-import { CastInfo, ReviewsInfo } from 'components';
+
+const CastInfo = lazy(() => import('components/CastInfo/CastInfo'));
+const ReviewsInfo = lazy(() => import('components/ReviewsInfo/ReviewsInfo'));
 
 const MovieCard = () => {
-    // const path = useLocation().pathname;
-    // console.log('match: ', path);
+    const location = useLocation();
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const controller = new AbortController();
@@ -18,7 +28,6 @@ const MovieCard = () => {
         async function getMovie() {
             try {
                 const data = await delivery.getMovie(movieId);
-                console.log('data_movie: ', data);
                 data.poster = data.poster_path
                     ? `https://image.tmdb.org/t/p/w300/${data.poster_path}`
                     : poster;
@@ -34,18 +43,25 @@ const MovieCard = () => {
         return () => {
             controller.abort();
         };
-    }, []);
+    }, [movieId]);
+
+    const goToBack = () =>
+        location.state ? navigate(location.state.from) : navigate('/');
 
     return (
         movie && (
             <div className={s.container}>
-                <Link to="/">Go Back</Link>
+                <button className={s.button} onClick={() => goToBack()}>
+                    <ImArrowLeft /> Go Back
+                </button>
                 <div className={s.info}>
-                    <img src={movie.poster} alt={movie.title} />
+                    <img src={movie.poster} alt={movie.title} width="300" />
                     <div>
                         <h2>
                             {movie.original_title} (
-                            {movie.release_date.slice(0, 4)})
+                            {movie.release_date.slice(0, 4) ||
+                                'release date is unknown'}
+                            )
                         </h2>
                         <span>
                             User score: {Math.round(movie.vote_average * 10)}%
@@ -59,15 +75,20 @@ const MovieCard = () => {
                 <div className={s.line}></div>
                 <h4>Additional information</h4>
                 <div className={s.thumb}>
-                    <NavLink to="cast">Cast</NavLink>
-                    <NavLink to="reviews">Reviews</NavLink>
+                    <NavLink to="cast" state={{ from: location }}>
+                        Cast
+                    </NavLink>
+                    <NavLink to="reviews" state={{ from: location }}>
+                        Reviews
+                    </NavLink>
                 </div>
                 <div className={s.line}></div>
-
-                <Routes>
-                    <Route path="cast" element={<CastInfo />} />
-                    <Route path="reviews" element={<ReviewsInfo />} />
-                </Routes>
+                <Suspense>
+                    <Routes>
+                        <Route path="cast" element={<CastInfo />} />
+                        <Route path="reviews" element={<ReviewsInfo />} />
+                    </Routes>
+                </Suspense>
             </div>
         )
     );

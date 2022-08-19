@@ -17,6 +17,11 @@
     background-color: #eeeeee;
 }
 
+.text {
+    composes: item;
+    width: 100%;
+}
+
 .name {
     text-align: center;
 }
