@@ -11,6 +11,9 @@ const MovieSearch = () => {
     const [status, setStatus] = useState('idle');
 
     useEffect(() => {
+        const controller = new AbortController();
+        delivery.signal = controller.signal;
+
         const renderGallery = async () => {
             setStatus('loading');
             try {
@@ -24,10 +27,14 @@ const MovieSearch = () => {
         };
 
         const query = searchParams.get('query');
-        if (delivery.query !== query) {
+        if (delivery.query !== query || status === 'idle') {
             delivery.query = query;
             query && renderGallery();
         }
+
+        return () => {
+            controller.abort();
+        };
     }, [searchParams, status]);
 
     const onSubmit = event => {
