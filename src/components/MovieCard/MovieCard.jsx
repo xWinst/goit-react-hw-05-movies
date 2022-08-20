@@ -20,6 +20,7 @@ const MovieCard = () => {
     const { movieId } = useParams();
     const [movie, setMovie] = useState(null);
     const navigate = useNavigate();
+    const from = location.state?.from || '/';
 
     useEffect(() => {
         const controller = new AbortController();
@@ -45,13 +46,10 @@ const MovieCard = () => {
         };
     }, [movieId]);
 
-    const goToBack = () =>
-        location.state ? navigate(location.state.from) : navigate('/');
-
     return (
         movie && (
             <div className={s.container}>
-                <button className={s.button} onClick={() => goToBack()}>
+                <button className={s.button} onClick={() => navigate(from)}>
                     <ImArrowLeft /> Go Back
                 </button>
                 <div className={s.info}>
@@ -75,10 +73,10 @@ const MovieCard = () => {
                 <div className={s.line}></div>
                 <h4>Additional information</h4>
                 <div className={s.thumb}>
-                    <NavLink to="cast" state={{ from: location }}>
+                    <NavLink to="cast" state={{ from }}>
                         Cast
                     </NavLink>
-                    <NavLink to="reviews" state={{ from: location }}>
+                    <NavLink to="reviews" state={{ from }}>
                         Reviews
                     </NavLink>
                 </div>

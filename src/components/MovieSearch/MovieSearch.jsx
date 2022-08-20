@@ -24,10 +24,9 @@ const MovieSearch = () => {
         };
 
         const query = searchParams.get('query');
-        if (query) {
-            delivery.query = query;
-            renderGallery();
-        }
+        delivery.query = query;
+        if (query) renderGallery();
+        else setStatus('noQuery');
     }, [searchParams, setSearchParams]);
 
     const onSubmit = event => {
@@ -35,7 +34,7 @@ const MovieSearch = () => {
         const query = event.target[1].value.trim();
         event.target[1].value = '';
         if (delivery.query !== query) {
-            setSearchParams({ query });
+            setSearchParams(query ? { query } : {});
         }
     };
 
@@ -69,7 +68,16 @@ const MovieSearch = () => {
                 </div>
             )}
 
-            {moviesList.length && <MoviesList list={moviesList} />}
+            {status === 'noQuery' && (
+                <div className={s.noResults}>
+                    You didn't enter anything in the search box. Please try
+                    again.
+                </div>
+            )}
+
+            {moviesList.length && status === '' && (
+                <MoviesList list={moviesList} />
+            )}
         </>
     );
 };

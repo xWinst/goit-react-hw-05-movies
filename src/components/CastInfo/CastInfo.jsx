@@ -19,7 +19,6 @@ const CastInfo = () => {
             try {
                 const data = await delivery.getCredits(movieId);
                 setCastList(data.cast);
-
                 if (!data.cast.length) setStatus('noResults');
                 else setStatus('resolved');
             } catch (error) {
