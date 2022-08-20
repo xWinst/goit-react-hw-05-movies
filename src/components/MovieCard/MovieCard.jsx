@@ -81,6 +81,7 @@ const MovieCard = () => {
                     </NavLink>
                 </div>
                 <div className={s.line}></div>
+
                 <Suspense>
                     <Routes>
                         <Route path="cast" element={<CastInfo />} />

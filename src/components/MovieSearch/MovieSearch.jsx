@@ -8,7 +8,7 @@ import s from './MovieSearch.module.css';
 const MovieSearch = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [moviesList, setMoviesList] = useState([]);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState('idle');
 
     useEffect(() => {
         const renderGallery = async () => {
@@ -17,25 +17,25 @@ const MovieSearch = () => {
                 const data = await delivery.search();
                 setMoviesList(data.results);
                 if (!data.results.length) setStatus('noResults');
-                else setStatus('');
+                else setStatus('resolved');
             } catch (error) {
                 console.log('error: ', error);
             }
         };
 
         const query = searchParams.get('query');
-        delivery.query = query;
-        if (query) renderGallery();
-        else setStatus('noQuery');
-    }, [searchParams, setSearchParams]);
+        if (delivery.query !== query) {
+            delivery.query = query;
+            query && renderGallery();
+        }
+    }, [searchParams, status]);
 
     const onSubmit = event => {
         event.preventDefault();
         const query = event.target[1].value.trim();
         event.target[1].value = '';
-        if (delivery.query !== query) {
-            setSearchParams(query ? { query } : {});
-        }
+        if (!query) setStatus('noQuery');
+        setSearchParams(query ? { query } : {});
     };
 
     return (
@@ -75,9 +75,7 @@ const MovieSearch = () => {
                 </div>
             )}
 
-            {moviesList.length && status === '' && (
-                <MoviesList list={moviesList} />
-            )}
+            {status === 'resolved' && <MoviesList list={moviesList} />}
         </>
     );
 };
